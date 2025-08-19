@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import InventoryItem, InventoryChangeLog
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
+from .models import Item
 
 User = get_user_model()
 
@@ -77,3 +78,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+    
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'name', 'description', 'quantity', 'price', 'owner']
+        read_only_fields = ['owner']

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import User
 
 # types of inventory changes
 CHANGE_TYPES = [
@@ -21,7 +22,7 @@ class InventoryItem(models.Model):
     category = models.CharField(max_length=120, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='items')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inventory_items')
 
     class Meta:
         ordering = ['-last_updated']
@@ -47,3 +48,13 @@ class InventoryChangeLog(models.Model):
 
     def __str__(self):
         return f"{self.item.name}: {self.change_type} {self.old_quantity}->{self.new_quantity}"
+    
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_items")  # ✅ صاحب العنصر
+
+    def __str__(self):
+        return self.name
