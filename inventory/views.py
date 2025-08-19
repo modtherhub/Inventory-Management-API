@@ -4,13 +4,13 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from .models import InventoryItem, InventoryChangeLog
-from .serializers import InventoryItemSerializer, InventoryChangeLogSerializer, UserSerializer
+from .serializers import InventoryItemSerializer, InventoryChangeLogSerializer, UserSerializer, UserRegisterSerializer
 from .permissions import IsOwner
 from .filters import InventoryItemFilter
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from rest_framework import status
+from rest_framework import status, generics
 
 User = get_user_model()
 
@@ -64,3 +64,7 @@ class LoginView(APIView):
             return Response({'token': token.key})
         # return error for invalid credentials
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserRegisterView(generics.CreateAPIView):
+    serializer_class = UserRegisterSerializer
+    permission_classes = [permissions.AllowAny]
