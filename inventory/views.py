@@ -80,3 +80,12 @@ class ItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+class InventoryLevelViewSet(viewsets.ReadOnlyModelViewSet):
+
+    # List-only endpoint that returns the current user's inventory items (with quantities).    
+    serializer_class = InventoryItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return InventoryItem.objects.filter(owner=self.request.user).order_by('-last_updated')
