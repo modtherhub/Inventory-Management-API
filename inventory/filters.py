@@ -8,7 +8,7 @@ class InventoryItemFilter(django_filters.FilterSet):
     min_price = django_filters.NumberFilter(field_name='price', lookup_expr='gte') # Praice >= min_praice
     max_price = django_filters.NumberFilter(field_name='price', lookup_expr='lte') # Praice <= max_praice
     
-    category = django_filters.CharFilter(field_name='category', lookup_expr='iexact') # exact category match
+    category = django_filters.CharFilter(field_name='category', lookup_expr='icontains') # category Flexible Match
     # Custom boolean filter for low stock items
     # ﻻy default, returns items with quantity less than 5
     # هf the user provides a custom threshold (low_stock_threshold), use that instead
