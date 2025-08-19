@@ -14,11 +14,13 @@ from rest_framework import status
 
 User = get_user_model()
 
-# Inventory Item
+# Inventory Item Management
+# handles CRUD operations for inventory items
+# only authenticated users can access, and users see only their own items
 class InventoryItemViewSet(viewsets.ModelViewSet):
     queryset = InventoryItem.objects.all()
     serializer_class = InventoryItemSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    permission_classes = [permissions.IsAuthenticated, IsOwner] # Ensure users can only access their items
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_class = InventoryItemFilter
     ordering_fields = ['name', 'quantity', 'price', 'last_updated']
@@ -33,6 +35,8 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 # Inventory Change Log
+# read-only view of all inventory changes, for auditing purposes
+# accessible only by authenticated users
 class InventoryChangeLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = InventoryChangeLog.objects.all()
     serializer_class = InventoryChangeLogSerializer
@@ -45,7 +49,8 @@ class UserViewSet(viewsets.ModelViewSet):
     # Only administrators can manage users.
     permission_classes = [permissions.IsAdminUser]
 
-# Login
+# Login Endpoint
+# handles user authentication and returns a token for API access
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -54,6 +59,8 @@ class LoginView(APIView):
         password = request.data.get('password')
         user = User.objects.filter(username=username).first()
         if user and user.check_password(password):
+             # generate or retrieve token for the user
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key})
+        # return error for invalid credentials
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)

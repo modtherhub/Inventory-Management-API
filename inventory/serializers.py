@@ -17,6 +17,7 @@ class InventoryItemSerializer(serializers.ModelSerializer):
             'date_added', 'last_updated', 'owner'
         ]
 
+    # Field-level validations
     def validate_name(self, value):
         if not value.strip():
             raise serializers.ValidationError('Name is required.')
@@ -32,7 +33,9 @@ class InventoryItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Price cannot be negative.')
         return value
     
-
+# serializer for inventory Change logs
+# read-only, Display changes made to inventory items
+# shows the user who made the change & the item affected
 class InventoryChangeLogSerializer(serializers.ModelSerializer):
     item = serializers.PrimaryKeyRelatedField(read_only=True)
     changed_by = serializers.ReadOnlyField(source='changed_by.username')
@@ -43,6 +46,9 @@ class InventoryChangeLogSerializer(serializers.ModelSerializer):
             'id', 'item', 'changed_by', 'old_quantity', 'new_quantity', 'change_type', 'change_date'
         ]
 
+# Serializer for Users
+# Admin-facing to manage users
+# Only includes basic fields for display and management
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

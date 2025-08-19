@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+# types of inventory changes
 CHANGE_TYPES = [
     ("restock", "Restock"),
     ("sale", "Sale"),
@@ -9,7 +10,9 @@ CHANGE_TYPES = [
 
 User = settings.AUTH_USER_MODEL
 
-
+# Inventory item model
+# Represents an item in the inventory
+# Tracks owner, quantity, price, category, & timestamps
 class InventoryItem(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -27,8 +30,9 @@ class InventoryItem(models.Model):
         return f"{self.name} (qty={self.quantity})"
 
 
-
-
+# Inventory change log model
+# Logs all changes to inventory items for auditing purposes
+# Stores who made the change, type of change, and old/new quantities
 class InventoryChangeLog(models.Model):
     item = models.ForeignKey(InventoryItem, on_delete=models.CASCADE, related_name='changes')
     changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
