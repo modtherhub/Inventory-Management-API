@@ -57,14 +57,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'is_staff']
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    # ensure username is required and unique across all users
     username = serializers.CharField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]  # ← يمنع تكرار اليوزر نيم
+        validators=[UniqueValidator(queryset=User.objects.all())]  
     )
+    # validate email as required and enforce uniqueness
     email = serializers.EmailField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]  # ← يمنع التكرار
+        validators=[UniqueValidator(queryset=User.objects.all())]  
     )
+    # password is write-only and must meet minimum length
     password = serializers.CharField(write_only=True, min_length=8)
 
     class Meta:
@@ -72,6 +75,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password']
 
     def create(self, validated_data):
+        # use Django's built-in user creation to handle password hashing
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -82,5 +86,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
+        # include essential item fields in API responses
         fields = ['id', 'name', 'description', 'quantity', 'price', 'owner']
+         # owner set automatically & cannot be modified by clients
         read_only_fields = ['owner']
