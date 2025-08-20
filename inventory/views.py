@@ -67,6 +67,17 @@ class LoginView(APIView):
         # return error for invalid credentials
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
     
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            #Delete the current user's token
+            request.user.auth_token.delete()
+            return Response({"message": "Successfully logged out."}, status=status.HTTP_200_OK)
+        except:
+            return Response({"error": "Something went wrong."}, status=status.HTTP_400_BAD_REQUEST)
+    
 class UserRegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
     permission_classes = [permissions.AllowAny]
