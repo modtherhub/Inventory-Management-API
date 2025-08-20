@@ -11,8 +11,6 @@ from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework import status, generics
-from .models import Item
-from .serializers import ItemSerializer
 
 User = get_user_model()
 
@@ -35,6 +33,35 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # make the owner the current user.
         serializer.save(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        item = serializer.save(owner=self.request.user)
+        InventoryChangeLog.objects.create(
+            item=item,
+            changed_by=self.request.user,
+            old_quantity=0,
+            new_quantity=item.quantity,
+            change_type="restock"
+        )
+
+    def perform_update(self, serializer):
+        old_item = self.get_object()
+        old_qty = old_item.quantity
+        item = serializer.save()
+        if item.quantity > old_qty:
+            change_type = "restock"
+        elif item.quantity < old_qty:
+            change_type = "sale"
+        else:
+            change_type = "adjustment"
+
+        InventoryChangeLog.objects.create(
+            item=item,
+            changed_by=self.request.user,
+            old_quantity=old_qty,
+            new_quantity=item.quantity,
+            change_type=change_type
+        )
 
 # Inventory Change Log
 # read-only view of all inventory changes, for auditing purposes
@@ -71,15 +98,6 @@ class UserRegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
     permission_classes = [permissions.AllowAny]
 
-class ItemViewSet(viewsets.ModelViewSet):
-    serializer_class = ItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Item.objects.filter(owner=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
 
 class InventoryLevelViewSet(viewsets.ReadOnlyModelViewSet):
 

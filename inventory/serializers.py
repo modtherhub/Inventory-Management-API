@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import InventoryItem, InventoryChangeLog
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
-from .models import Item
 
 User = get_user_model()
 
@@ -83,10 +82,3 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         )
         return user
     
-class ItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Item
-        # include essential item fields in API responses
-        fields = ['id', 'name', 'description', 'quantity', 'price', 'owner']
-         # owner set automatically & cannot be modified by clients
-        read_only_fields = ['owner']
