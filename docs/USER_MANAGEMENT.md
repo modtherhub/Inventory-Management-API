@@ -22,6 +22,7 @@
 
 - `POST /api/register/` → Register a new user
 - `POST /api/login/` → Obtain authentication token
+- `POST /api/logout/` → Delet authentication token
 - `GET /api/items/` → List items (only own items)
 - `POST /api/items/` → Create item
 - `PUT /api/items/{id}/` → Update item
@@ -33,4 +34,5 @@
 Use `curl` or Postman to:
 1. Register users
 2. Obtain token
-3. Test CRUD operations with ownership enforcement
+3. Delet token
+4. Test CRUD operations with ownership enforcement
