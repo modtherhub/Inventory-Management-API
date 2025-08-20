@@ -67,9 +67,17 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
 # read-only view of all inventory changes, for auditing purposes
 # accessible only by authenticated users
 class InventoryChangeLogViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = InventoryChangeLog.objects.all()
     serializer_class = InventoryChangeLogSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = InventoryChangeLog.objects.all()
+        # allow filtering by item
+        item_id = self.request.query_params.get("item")
+        if item_id:
+            queryset = queryset.filter(item__id=item_id)
+        # show only changes related to items owned by the current user
+        return queryset.filter(item__owner=self.request.user)
 
 # Users
 class UserViewSet(viewsets.ModelViewSet):
