@@ -17,9 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/", include("inventory.urls")),
     path("api/login/", obtain_auth_token, name="api_login"),
+
+    path('', TemplateView.as_view(template_name="index.html"), name="index"),
+    path('login/', TemplateView.as_view(template_name="login.html"), name="login"),
+    path('register/', TemplateView.as_view(template_name="register.html"), name="register"),
+    path('dashboard/', TemplateView.as_view(template_name="dashboard.html"), name="dashboard"),
 ]
