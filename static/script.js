@@ -1,5 +1,21 @@
 const API_URL = "http://127.0.0.1:8000/api";
 
+function getCSRFToken() {
+  const name = "csrftoken";
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 // Utility
 function getToken() { return localStorage.getItem("token"); }
 function setToken(token) { localStorage.setItem("token", token); }
@@ -17,7 +33,9 @@ if (registerForm) {
     };
     const res = await fetch(`${API_URL}/register/`, {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: {"Content-Type":"application/json",
+        "X-CSRFToken": getCSRFToken()
+      },
       body: JSON.stringify(data)
     });
     const result = await res.json();
@@ -37,7 +55,9 @@ if (loginForm) {
     };
     const res = await fetch(`${API_URL}/login/`, {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: {"Content-Type":"application/json",
+        "X-CSRFToken": getCSRFToken()
+      },
       body: JSON.stringify(data)
     });
     const result = await res.json();
@@ -56,7 +76,9 @@ if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
     const res = await fetch(`${API_URL}/logout/`, {
       method: "POST",
-      headers: { "Authorization": `Token ${getToken()}`}
+      headers: { "Authorization": `Token ${getToken()}`,
+        "X-CSRFToken": getCSRFToken()
+      }
     });
     clearToken();
     window.location.href = "/login/";
@@ -119,7 +141,9 @@ if (itemForm) {
       method: method,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Token ${getToken()}`},
+        "Authorization": `Token ${getToken()}`,
+        "X-CSRFToken": getCSRFToken()
+      },
       body: JSON.stringify(data)
     });
     if (res.ok) {
@@ -149,7 +173,9 @@ async function deleteItem(id) {
   if (!confirm("Are you sure?")) return;
   await fetch(`${API_URL}/items/${id}/`, {
     method: "DELETE",
-    headers: { "Authorization": `Token ${getToken()}`}
+    headers: { "Authorization": `Token ${getToken()}`,
+        "X-CSRFToken": getCSRFToken()
+      }
   });
   loadItems();
 }

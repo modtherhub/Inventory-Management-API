@@ -25,6 +25,7 @@
 
   <h2>Add / Update Item</h2>
   <form id="item-form">
+    {% csrf_token %}
     <input type="hidden" id="item-id">
     <input type="text" id="name" placeholder="Name" required>
     <input type="text" id="description" placeholder="Description" required>
