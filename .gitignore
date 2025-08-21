@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.sqlite3
+*$py.class
 
 
 # env
@@ -13,6 +14,11 @@ venv/
 # django
 staticfiles/
 media/
+*/migrations/
+!*/migrations/__init__.py
+.DS_Store
+Thumbs.db
+*.log
 
 
 # IDE
