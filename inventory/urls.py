@@ -15,3 +15,4 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(), name="logout"),
     path('register/', UserRegisterView.as_view(), name='user-register'),
 ]
+"""  """

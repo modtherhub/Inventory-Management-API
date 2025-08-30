@@ -125,10 +125,13 @@ class LoginView(APIView):
         if user and user.check_password(password):
              # generate or retrieve token for the user
             token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
+            return Response({
+                "message": f"Welcome {user.username}, you are logged in",
+                "token": token.key
+            }, status=status.HTTP_200_OK)
         # return error for invalid credentials
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
